@@ -3,15 +3,6 @@ title: Manipulating, analyzing and exporting data with tidyverse
 author: Data Carpentry contributors
 ---
 
-```{r, echo=FALSE, purl=FALSE, message = FALSE}
-source("setup.R")
-surveys <- read.csv("data_raw/portal_data_joined.csv")
-suppressWarnings(surveys$date <- lubridate::ymd(paste(surveys$year,
-                                                      surveys$month,
-                                                      surveys$day,
-                                                      sep = "-")))
-```
-
 ### Manipulating and analyzing data with dplyr
 
 ------------
@@ -34,37 +25,29 @@ suppressWarnings(surveys$date <- lubridate::ymd(paste(surveys$year,
 
 # Data Manipulation using **`dplyr`** and **`tidyr`**
 
-Bracket subsetting is handy, but it can be cumbersome and difficult to read,
-especially for complicated operations. Enter **`dplyr`**. **`dplyr`** is a package for
-making tabular data manipulation easier. It pairs nicely with **`tidyr`** which enables you to swiftly convert between different data formats for plotting and analysis.
+**`dplyr`** is a package for making tabular data manipulation easier. It pairs nicely with **`tidyr`** which enables you to swiftly convert between different data formats for plotting and analysis.
 
 Packages in R are basically sets of additional functions that let you do more
-stuff. The functions we've been using so far, like `str()` or `data.frame()`,
-come built into R; packages give you access to more of them. Before you use a
-package for the first time you need to install it on your machine, and then you
-should import it in every subsequent R session when you need it. You should
-already have installed the **`tidyverse`** package. This is an
+stuff. Before you use a package for the first time you need to install it on 
+your machine, and then you should import it in every subsequent R session when you need it. You should already have installed the **`tidyverse`** package. This is an
 "umbrella-package" that installs several packages useful for data analysis which
 work together well such as **`tidyr`**, **`dplyr`**, **`ggplot2`**, **`tibble`**, etc.
 
 
-The **`tidyverse`** package tries to address 3 common issues that arise when
-doing data analysis with some of the functions that come with R:
+R is amazing because it is open source, free and anyone can build and share software for it. Unfortunately, this also means it has evolved "organically" and different designers have applied different approaches to how their packages work and how data is seen and treated by them. R runs a set of packages that are called base packaages and these are not always consistant or intuitive, which makes learning R difficult.
 
-1. The results from a base R function sometimes depend on the type of data.
-2. Using R expressions in a non standard way, which can be confusing for new
-   learners.
-3. Hidden arguments, having default operations that new learners are not aware
-   of.
+The **`tidyverse`** package tries to address common issues that arise when
+doing data analysis with some of the functions that come with R by creating a harmonious set of packages that share an underlying characteristics.
 
-We have seen in our previous lesson that when building or importing a data frame, the columns that contain characters (i.e., text) are coerced (=converted) into the `factor` data type. We had to set **`stringsAsFactors`** to **`FALSE`** to avoid this hidden argument to convert our data type. 
+1. Design philosophy
+2. Grammar
+3. Data structures
 
-This time we will use the **`tidyverse`** package to read the data and avoid having to set **`stringsAsFactors`** to **`FALSE`**
+We will use the **`tidyverse`** package to read, inspect and manipulate data.
 
 If we haven't already done so, we can type `install.packages("tidyverse")` straight into the console. In fact, it's better to write this in the console than in our script for any package, as there's no need to re-install packages every time we run the script.
 
 Then, to load the package type:
-
 
 ```{r, message = FALSE, purl = FALSE}
 ## load the tidyverse packages, incl. dplyr
@@ -74,29 +57,18 @@ library(tidyverse)
 ## What are **`dplyr`** and **`tidyr`**?
 
 The package **`dplyr`** provides easy tools for the most common data manipulation
-tasks. It is built to work directly with data frames, with many common tasks
-optimized by being written in a compiled language (C++). An additional feature is the
-ability to work directly with data stored in an external database. The benefits of
-doing this are that the data can be managed natively in a relational database,
-queries can be conducted on that database, and only the results of the query are
-returned.
+tasks. It is build with robust programming language (C++) and designed to work efficiently with remote and large datasets.
 
-This addresses a common problem with R in that all operations are conducted
-in-memory and thus the amount of data you can work with is limited by available
-memory. The database connections essentially remove that limitation in that you
-can connect to a database of many hundreds of GB, conduct queries on it directly, and pull
-back into R only what you need for analysis.
-
-The package **`tidyr`** addresses the common problem of wanting to reshape your data for plotting and use by different R functions. Sometimes we want data sets where we have one row per measurement. Sometimes we want a data frame where each measurement type has its own column, and rows are instead more aggregated groups - like plots or aquaria. Moving back and forth between these formats is non-trivial, and **`tidyr`** gives you tools for this and more sophisticated  data manipulation.
+The package **`tidyr`** addresses the common problem of wanting to reshape your data for plotting and use by different R functions. Sometimes we want data sets where we have one row per measurement. Sometimes we want a data frame where each measurement type has its own column, and rows are instead more aggregated groups - time series or strains. Moving back and forth between these formats is non-trivial, and **`tidyr`** gives you tools for this and more sophisticated data manipulation.
 
 To learn more about **`dplyr`** and **`tidyr`** after the workshop, you may want to check out this
 [handy data transformation with **`dplyr`** cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) and this [one about **`tidyr`**](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf).
 
-We'll read in our data using the `read_csv()` function, from the tidyverse package **`readr`**, instead of `read.csv()`.
+We'll read in our data using the `read_csv()` function, from the tidyverse package **`readr`** and we'll create an object called "surveys" which will be a data table or "tibble".
 
 
 ```{r, results = 'hide', purl = FALSE}
-surveys <- read_csv("data_raw/portal_data_joined.csv")
+surveys <- read_csv("https://ndownloader.figshare.com/files/2292169")
 ```
 
 You will see the message `Parsed with column specification`, followed by each column name and its data type.
@@ -117,12 +89,12 @@ View(surveys)
 
 Notice that the class of the data is now `tbl_df`
 
-This is referred to as a "tibble". Tibbles tweak some of the behaviors of the data frame objects we introduced in the previous episode. The data structure is very similar to a data frame. For our purposes the only differences are that:
+This is referred to as a "tibble". If you have used R before, you may have used data frames. Tibble data structure is very similar to a data frame. For our purposes the only differences are that:
 
 1. In addition to displaying the data type of each column under its name, it
    only prints the first few rows of data and only as many columns as fit on one
    screen.
-2. Columns of class `character` are never converted into factors.
+2. Columns of class `character` are never converted into factors. This created a lot of headaches in the past.
 
 
 We're going to learn some of the most common **`dplyr`** functions:
