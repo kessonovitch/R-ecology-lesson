@@ -1,8 +1,10 @@
 ---
 title: "Manipulating, analyzing and exporting data with tidyverse"
-author: Data Carpentry contributors
+author: "Data Carpentry contributors"
 date: "20/01/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ### Manipulating and analyzing data with dplyr
