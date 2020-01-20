@@ -3,6 +3,10 @@ title: "Manipulating, analyzing and exporting data with tidyverse"
 author: "Data Carpentry contributors"
 date: "20/01/2020"
 output:
+<<<<<<< HEAD
+=======
+  pdf_document: default
+>>>>>>> 57bc19ea1320d933e633ccd5b9cf1540f1389ba4
   html_document: default
 ---
 
