@@ -1,5 +1,5 @@
 ---
-title: title: "Visualising data with ggplot2"
+title: "Visualising data with ggplot2"
 author: "Data Carpentry contributors"
 date: "20/01/2020"
 output:
